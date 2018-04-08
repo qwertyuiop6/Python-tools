@@ -60,41 +60,7 @@ def save_img(src):
     filename = '%s.jpg' % (t)
     with open('D:/my-python/spider/mm/'+filename, 'wb') as f:
         f.write(img.content)
-    
-# def get_info(m,tr,soup2):
-#     td=tr[m].find_all('td')
-#     server=td[1].string #服务器名称
-#     #season=td[5].string #季节
-#     #print(server)
-#     tr3=soup2.table.find_all('tr')
-#     day=tr3[5].td.h2.string   #天数
-#     day=day[4:]+'天' 
-#     #print(day)
-#     number=tr3[2].td.h2.string    #人员
-#     number=number[:-7]+'人' 
-#     #print(number)
-#     season=tr3[4].td.h2.string    #季节
 
-#     tr2=soup2.find_all('table')[2].find_all('tr') #玩家列表
-#     people=''
-#     if len(tr2)== 1 and tr2[0].find('td')==None:
-#         people='没人快来玩啊~( • ̀ω•́ )✧`\n'
-#     else:
-#         a=0
-#         while a<len(tr2):
-#             td2=tr2[a].find_all('td')
-#             b=0
-#             while b<len(td2):
-#                 if b%2:
-#                     pass
-#                 else:
-#                     player=td2[b].a.string
-#                     jiaose=td2[b].span.a.string
-#                     people+=player+':'+jiaose+'\n'
-#                 b+=1
-#             a+=1
-#     All=server+':'+day+' '+season+','+number+'\n'+people
-#     return All   
 
 get_mm('xinggan',5)
 
