@@ -1,3 +1,4 @@
+import os
 def tras(ini):
 	a=1
 	b=''
@@ -27,9 +28,10 @@ def tras2(twochar):
 		'4B':'2','4C':'5','4D':'4','4E':'7','4F':'6'
 	}.get(twochar,'**')
 
-
-with open('D:/my-python/Tools/UserCustom.ini','r') as f:
-	with open('D:/my-python/Tools/UserCustom2.ini','w') as r:
+u1='%s/UserCustom.ini'%(os.path.abspath('ini'))
+u2='%s/UserCustom2.ini'%(os.path.abspath('ini'))
+with open(u1,'r') as f:
+	with open(u2,'w') as r:
 		r.write(tras(f.read()))
 
 	

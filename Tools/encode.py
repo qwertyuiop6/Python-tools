@@ -1,3 +1,4 @@
+import os
 def tras(ini):
 	res=''
 	m=1
@@ -26,8 +27,9 @@ def tras2(char):
 		'5':'4C','4':'4D','7':'4E','6':'4F'
 	}.get(char,'*')
 
-
-with open('D:/my-python/Tools/UserCustom2.ini','r') as f:
-	with open('D:/my-python/Tools/UserCustom.ini','w') as r:
+u1='%s/UserCustom.ini'%(os.path.abspath('ini'))
+u2='%s/UserCustom2.ini'%(os.path.abspath('ini'))
+with open(u2,'r') as f:
+	with open(u1,'w') as r:
 		for line in f.readlines():
 			r.write(tras(line))

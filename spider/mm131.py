@@ -1,7 +1,7 @@
-#coding:utf-8
 import requests
 import bs4
 import time
+import os
 header={
 
     # 'X-Requested-With':'XMLHttpRequest',
@@ -23,50 +23,108 @@ header2={
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
 }
 
-def get_mm(type,number):
+def set_header(referer):
+    headers = {
+        'Pragma': 'no-cache',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.9,ja;q=0.8,en;q=0.7',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
+        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+        'Referer': '{}'.format(referer),
+    }
+    return headers
+
+def get_page_links(number,type):
     try:
-    
+        last_page=True
+        while number>20:
+            x=int(number/20)+1
+            url='http://www.mm131.com/'+type+'/list_6_'+str(x)+'.html'
+            r = requests.get(url,headers=header)
+            print('开始爬取第',x,'页')
+            if last_page==True:
+                make(r.content,number%20,x)
+                last_page=False
+            else :
+                make(r.content,20,x)
+            number-=20
+        
         url='http://www.mm131.com/'+type
         r = requests.get(url,headers=header)
-        #r.encoding='gb2312'
-        make(r.content,number)
+        print('开始爬取第1页')
+        if last_page==False:
+            make(r.content,20,1)
+        else:
+            make(r.content,number,1)
     except:
         return '出现异常，未执行爬取！'
 
-def make(text,number):
+
+def make(text,number,x):
     soup = bs4.BeautifulSoup(text, 'lxml') #查询首页内容
-    #print(soup) 
-    list1=soup.find_all('dd')  #将列表存为list
+    #print(soup)
+    list1=soup.find_all('dd')
     #print(list1)
     if list1!=[]:
         print('找到啦(๑＞ڡ＜)✿ ~')
     else:
-        print('没有?')
+        print('???')
     
     m=0
     while m<number:    #循环处理列表各项
-        img_src=list1[m].a.img['src']
-        img_alt=list1[m].a.img['alt']
-        #r2= requests.get(host+fancybox,headers=header)  #ajax请求列表各服务器详情
-        #soup2=bs4.BeautifulSoup(r2.text, 'lxml')
-        print('第',m,'发现链接',img_src,'!','开始下载：',img_alt)
-        save_img(img_src)
-        print('下载成功~')
+        page_src=list1[m].a['href']
+        page_alt=list1[m].a.img['alt']
+        print('第',m+1,'组,找到链接:',page_src,',','标题：',page_alt)
+        go_page(page_src,m+1,page_alt)
+        print('第',m+1,'组下载成功~')
+        m+=1    
+
+def go_page(page_src,n,title):
+    r = requests.get(page_src,headers=header)
+    soup = bs4.BeautifulSoup(r.content, 'lxml')
+    #print(soup)
+    img_number=soup.select('.page-ch')[0].string[1:-1]
+    img_dates=soup.select('.content-msg')[0].strings
+    date=True
+    img_date=''
+    for i in img_dates:
+        if date==True:
+            print(i)
+            img_date=i[10:15]
+            date=False
+    #print(img_date)
+    print('第',n,'组发现',img_number,'张图')
+    dirName = '[%s]%s (%s张)' % (img_date,title, img_number)
+    if os.path.exists('../../Download/mm131/'+dirName):
+        pass
+    else:
+        os.mkdir('../../Download/mm131/'+dirName)
+    m=0
+    while m<int(img_number):
+        
+        img_src=soup.select('.content-pic')[0].a.img['src']
+        print('开始下载第',m+1,'张图:',img_src)
+        save_img(img_src,m+1,dirName)
+        print('下载',img_src,'完毕~')
+        page_src2=page_src[:-5]+'_'+str(m+2)+'.html'
+        r2 = requests.get(page_src2,headers=header)
+        soup = bs4.BeautifulSoup(r2.text, 'lxml')
         m+=1
 
-def save_img(src):
-    img=requests.get(src,headers=header2)
-    t = int(round(time.time() * 1000))
-    filename = '%s.jpg' % (t)
-    with open('D:/my-python/spider/mm/'+filename, 'wb') as f:
-        f.write(img.content)
 
+def save_img(src,m,dirname):
+    img=requests.get(src,headers=set_header(src)).content
+    #t = int(round(time.time() * 1000))
+    filename = '%s/%s/%s.jpg' % (os.path.abspath('../../Download/mm131/'), dirname, m)
+    with open(filename, 'wb') as f:
+        f.write(img)
+    #time.sleep(0.5)
 
-get_mm('xinggan',5)
 
 
 
 if __name__ == '__main__':
-   print('程序运行中')
-else:
-   print('另一模块')
+    number = int(input('输入要爬取的人数:'))
+    get_page_links(number,'xinggan')

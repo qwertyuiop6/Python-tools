@@ -2,6 +2,7 @@ import requests
 import bs4
 import time
 import os
+
 header={
 
     # 'X-Requested-With':'XMLHttpRequest',
@@ -88,7 +89,7 @@ def go_page(page_src,n,x,title):
     while m<int(img_number):
         img_src=soup.select('#content')[0].a.img['data-img']
         print('开始下载第',m+1,'张图:',img_src)
-        save_img(img_src,m+1,n,x,dirName)
+        save_img(img_src,m+1,dirName)
         print('下载',img_src,'完毕~')
         page_src2=page_src+'/'+str(m+2)
         r2 = requests.get(page_src2,headers=header)
@@ -96,13 +97,13 @@ def go_page(page_src,n,x,title):
         m+=1
 
 
-def save_img(src,m,n,x,dirname):
+def save_img(src,m,dirname):
     img=requests.get(src,headers=set_header(src)).content
     t = int(round(time.time() * 1000))
-    filename = '%s/%s/%s.jpg' % (os.path.abspath('./mmjpg'), dirname, m)
-    #filename = '%s-%s-%s.jpg' % (x,n,m)
+    filename = '%s/%s/%s.jpg' % (os.path.abspath('mmjpg'), dirname, m)
     with open(filename, 'wb') as f:
         f.write(img)
+    #time.sleep(0.5)
 
 
 if __name__ == '__main__':
