@@ -78,7 +78,7 @@ def make(text,number,x):
         page_alt=list1[m].a.img['alt']
         print('第',m+1,'组,找到链接:',page_src,',','标题：',page_alt)
         go_page(page_src,m+1,page_alt)
-        print('第',m+1,'组下载成功~')
+        print('第',m+1,'组 '+page_alt+' 下载完毕~')
         m+=1    
 
 def go_page(page_src,n,title):
@@ -96,18 +96,27 @@ def go_page(page_src,n,title):
             date=False
     #print(img_date)
     print('第',n,'组发现',img_number,'张图')
+
+
     dirName = '[%s]%s (%s张)' % (img_date,title, img_number)
-    if os.path.exists('../../Download/mm131/'+dirName):
-        pass
+    fulldir='../../Download/mm131/'+dirName
+    if os.path.exists(fulldir):
+        print('已经下载过啦~')
+        return
     else:
-        os.mkdir('../../Download/mm131/'+dirName)
+        os.mkdir(fulldir)
+
     m=0
     while m<int(img_number):
         
         img_src=soup.select('.content-pic')[0].a.img['src']
-        print('开始下载第',m+1,'张图:',img_src)
-        save_img(img_src,m+1,dirName)
-        print('下载',img_src,'完毕~')
+        if os.path.isfile(fulldir+'/'+str(m+1)+'.jpg'):
+            print(dirName,'第',m+1,'张已存在')
+            pass
+        else:
+            print('开始下载第',m+1,'张图:',img_src)
+            save_img(img_src,m+1,fulldir)
+            print('下载完毕~')
         page_src2=page_src[:-5]+'_'+str(m+2)+'.html'
         r2 = requests.get(page_src2,headers=header)
         soup = bs4.BeautifulSoup(r2.text, 'lxml')
@@ -117,7 +126,7 @@ def go_page(page_src,n,title):
 def save_img(src,m,dirname):
     img=requests.get(src,headers=set_header(src)).content
     #t = int(round(time.time() * 1000))
-    filename = '%s/%s/%s.jpg' % (os.path.abspath('../../Download/mm131/'), dirname, m)
+    filename = '%s/%s.jpg' % (dirname, m)
     with open(filename, 'wb') as f:
         f.write(img)
     #time.sleep(0.5)
