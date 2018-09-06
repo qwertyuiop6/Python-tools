@@ -470,5 +470,5 @@ def main():
     app.exec_()
 
 
-#从main入口启动
+#从main入口启动 
 main()
