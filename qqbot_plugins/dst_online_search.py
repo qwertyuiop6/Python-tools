@@ -19,14 +19,14 @@ zhexue=['tvpFav0J1j6whczo1aOiasp4lOLqSZ2xh6rxAvXzifc%3D','Y8d2uZ5L1X5qJJWZRVdW82
 url1="https://dstserverlist.appspot.com/ajax/query"
 
 
-def search(server='哲学'):
+def search(server='def',**kw):
     
     try:
-        if ~server.find('哲学'):
+        if server=='def':
             return s2(zhexue)
         else:
+            
             res1 = requests.get(url1,headers=header).json().get('result')
-            print(res1)
             url2="https://dstserverlist.appspot.com/ajax/list?"+str(res1)
             # res2 = requests.get(url2,headers=header).json().get('result').encode('gb2312','ignore').decode('gb2312')
             res2 = requests.get(url2,headers=header).json().get('result')
@@ -60,7 +60,6 @@ def search(server='哲学'):
         return '查询失败'
 
 def s2(list):
-    print(list)
     try:
         res=''
         for i in list:
@@ -99,4 +98,4 @@ def s2(list):
         return '没有找到该服务器!'
 
 if __name__ == '__main__':
-    print(search("啦啦啦"))
+    print(search())
