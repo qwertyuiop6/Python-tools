@@ -116,7 +116,6 @@ def go_page(page_src,n,title):
         else:
             print('开始下载第',m+1,'张图:',img_src)
             save_img(img_src,m+1,fulldir)
-            print('下载完毕~')
         page_src2=page_src[:-5]+'_'+str(m+2)+'.html'
         r2 = requests.get(page_src2,headers=header)
         soup = bs4.BeautifulSoup(r2.text, 'lxml')
@@ -124,13 +123,17 @@ def go_page(page_src,n,title):
 
 
 def save_img(src,m,dirname):
-    img=requests.get(src,headers=set_header(src)).content
+    img=requests.get(src,headers=set_header(ref_set(src))).content
     #t = int(round(time.time() * 1000))
     filename = '%s/%s.jpg' % (dirname, m)
     with open(filename, 'wb') as f:
         f.write(img)
     #time.sleep(0.5)
 
+def ref_set(src):
+    ref=src[25:-4].split('/')
+    return 'http://www.mm131.com/xinggan/'+ref[0]+'_'+ref[1]+'.html'
+    
 
 
 
